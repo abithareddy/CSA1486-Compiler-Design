@@ -1,0 +1,67 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_PRODUCTIONS 10
+#define MAX_LENGTH 100
+
+typedef struct {
+    char nonTerminal;
+    char productions[MAX_PRODUCTIONS][MAX_LENGTH];
+    int count;
+} Grammar;
+
+void addProduction(Grammar *g, char *prod) {
+    strcpy(g->productions[g->count++], prod);
+}
+
+void eliminateLeftFactoring(Grammar *g) {
+    char commonPrefix[MAX_LENGTH] = "";
+    int prefixLen = 0;
+
+    for (int i = 0; i < g->count - 1; ++i) {
+        int k = 0;
+        while (g->productions[i][k] == g->productions[i + 1][k] && g->productions[i][k] != '\0') {
+            k++;
+        }
+        if (k > prefixLen) {
+            prefixLen = k;
+            strncpy(commonPrefix, g->productions[i], k);
+            commonPrefix[k] = '\0';
+        }
+    }
+
+    if (prefixLen > 0) {
+        char newNonTerminal = g->nonTerminal + 1;
+        printf("%c -> %s%c\n", g->nonTerminal, commonPrefix, newNonTerminal);
+
+        for (int i = 0; i < g->count; ++i) {
+            if (strncmp(g->productions[i], commonPrefix, prefixLen) == 0) {
+                printf("%c -> %s\n", newNonTerminal, g->productions[i] + prefixLen);
+            } else {
+                printf("%c -> %s\n", g->nonTerminal, g->productions[i]);
+            }
+        }
+    } else {
+        for (int i = 0; i < g->count; ++i) {
+            printf("%c -> %s\n", g->nonTerminal, g->productions[i]);
+        }
+    }
+}
+
+int main() {
+    Grammar g = {'A', {0}, 0};
+
+    addProduction(&g, "abc");
+    addProduction(&g, "abx");
+    addProduction(&g, "a");
+
+    printf("Original Grammar:\n");
+    for (int i = 0; i < g.count; ++i) {
+        printf("%c -> %s\n", g.nonTerminal, g.productions[i]);
+    }
+
+    printf("\nEliminated Left Factoring:\n");
+    eliminateLeftFactoring(&g);
+
+    return 0;
+}
