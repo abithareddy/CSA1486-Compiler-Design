@@ -1,0 +1,58 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include <string.h>
+
+// Function to check if a character is a valid arithmetic operator
+bool isOperator(char c) {
+    return (c == '+' || c == '-' || c == '*' || c == '/');
+}
+
+// Function to validate and recognize arithmetic operators in a given line
+void validateOperators(char *line) {
+    bool hasPlus = false;
+    bool hasMinus = false;
+    bool hasMultiply = false;
+    bool hasDivide = false;
+
+    for (int i = 0; i < strlen(line); i++) {
+        if (line[i] == '+') {
+            hasPlus = true;
+        } else if (line[i] == '-') {
+            hasMinus = true;
+        } else if (line[i] == '*') {
+            hasMultiply = true;
+        } else if (line[i] == '/') {
+            hasDivide = true;
+        }
+    }
+
+    if (hasPlus) {
+        printf("The line contains the '+' operator.\n");
+    }
+    if (hasMinus) {
+        printf("The line contains the '-' operator.\n");
+    }
+    if (hasMultiply) {
+        printf("The line contains the '*' operator.\n");
+    }
+    if (hasDivide) {
+        printf("The line contains the '/' operator.\n");
+    }
+    if (!hasPlus && !hasMinus && !hasMultiply && !hasDivide) {
+        printf("The line does not contain any arithmetic operators.\n");
+    }
+}
+
+int main() {
+    char line[100];  // Adjust size as needed
+    printf("Enter a line of code: ");
+    fgets(line, sizeof(line), stdin);
+
+    // Remove newline character from fgets
+    line[strcspn(line, "\n")] = 0;
+
+    // Validate and recognize arithmetic operators in the entered line
+    validateOperators(line);
+
+    return 0;
+}
