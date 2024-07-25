@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_LINE_LENGTH 1024
+
+// Function prototypes
+int isLineComment(const char *line);
+int isStartOfBlockComment(const char *line);
+int isEndOfBlockComment(const char *line);
+
+int main() {
+    char line[MAX_LINE_LENGTH];
+    int insideBlockComment = 0;
+    int lineNumber = 0;
+
+    // Reading lines from standard input until EOF
+    while (fgets(line, sizeof(line), stdin)) {
+        lineNumber++;
+        
+        // Check if currently inside a block comment
+        if (insideBlockComment) {
+            printf("Line %d: Inside block comment\n", lineNumber);
+            if (isEndOfBlockComment(line)) {
+                insideBlockComment = 0;
+                printf("Line %d: End of block comment\n", lineNumber);
+            }
+            continue;
+        }
+
+        // Check for line comments
+        if (isLineComment(line)) {
+            printf("Line %d: Line comment\n", lineNumber);
+        } else if (isStartOfBlockComment(line)) {
+            // Check for block comments
+            if (isEndOfBlockComment(line)) {
+                printf("Line %d: Block comment\n", lineNumber);  // Block comment on a single line
+            } else {
+                printf("Line %d: Start of block comment\n", lineNumber);
+                insideBlockComment = 1;
+            }
+        } else {
+            printf("Line %d: Not a comment\n", lineNumber);
+        }
+    }
+
+    return 0;
+}
+
+// Function to check if the line is a line comment
+int isLineComment(const char *line) {
+    return strstr(line, "//") == line;
+}
+
+// Function to check if the line contains the start of a block comment
+int isStartOfBlockComment(const char *line) {
+    return strstr(line, "/*") != NULL;
+}
+
+// Function to check if the line contains the end of a block comment
+int isEndOfBlockComment(const char *line) {
+    return strstr(line, "*/") != NULL;
+}
